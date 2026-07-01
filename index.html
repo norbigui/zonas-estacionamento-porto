@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<title>Zonas de Estacionamento 51 e 52 - Porto</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; font-family: Arial, sans-serif; }
+  #map { width: 100%; height: 100vh; }
+  .legend {
+    background: white;
+    padding: 10px 14px;
+    border-radius: 6px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+    line-height: 1.6;
+    font-size: 14px;
+  }
+  .legend span {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin-right: 6px;
+    border-radius: 2px;
+    vertical-align: middle;
+  }
+</style>
+</head>
+<body>
+<div id="map"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+const data = {"type": "FeatureCollection", "features": [{"type": "Feature", "id": 102, "geometry": {"type": "Polygon", "coordinates": [[[-8.635838210506437, 41.15986786657746], [-8.636121932555653, 41.16040011691741], [-8.637900370744761, 41.161899126819854], [-8.638201106104415, 41.16215260591688], [-8.63840504329431, 41.162299911988974], [-8.638958473455514, 41.16269965959888], [-8.640309416309949, 41.16148403246801], [-8.641929678289126, 41.16002598275628], [-8.649052542947114, 41.16122312488835], [-8.64984838693559, 41.16135543272952], [-8.649898573103327, 41.1598420859194], [-8.649224019599883, 41.15809829152218], [-8.648478998600465, 41.157092596562585], [-8.648283276311581, 41.15569794148506], [-8.647767789235218, 41.15475826728841], [-8.648046748824164, 41.15427850990767], [-8.64816956543949, 41.15406728885327], [-8.644353339022445, 41.15415170615193], [-8.641793224690389, 41.15386362419966], [-8.640519329222908, 41.15351604728919], [-8.64028339499257, 41.153451673362895], [-8.63930676245908, 41.156101992551775], [-8.638050964021, 41.15704538231745], [-8.637830998051598, 41.15768622549682], [-8.637707854177732, 41.15804498921487], [-8.63654796787879, 41.15784135467854], [-8.636176712759537, 41.158531244189874], [-8.63597917692351, 41.158898311445775], [-8.636109890556146, 41.15956734298481], [-8.635838210506437, 41.15986786657746]]]}, "properties": {"num_zona": 51, "nom_zona": "VENEZUELA", "objectid": 102}}, {"type": "Feature", "id": 126, "geometry": {"type": "Polygon", "coordinates": [[[-8.632934811431532, 41.15831921150111], [-8.63327212140195, 41.15848857678186], [-8.63597917692351, 41.158898311445775], [-8.636176712759537, 41.158531244189874], [-8.63654796787879, 41.15784135467854], [-8.637707854177732, 41.15804498921487], [-8.637830998051598, 41.15768622549682], [-8.638050964021, 41.15704538231745], [-8.63930676245908, 41.156101992551775], [-8.64028339499257, 41.153451673362895], [-8.637606089126324, 41.15276533584148], [-8.636516631799196, 41.152545893008686], [-8.634801290022398, 41.15237900748212], [-8.633418426159219, 41.15258436485393], [-8.632463298264248, 41.152688185709636], [-8.632247960775588, 41.15267895309976], [-8.631673980182713, 41.1538183180667], [-8.629885338752308, 41.155222844357205], [-8.630263630521862, 41.155890499889644], [-8.632934811431532, 41.15831921150111]]]}, "properties": {"num_zona": 52, "nom_zona": "AGRAMONTE", "objectid": 126}}]};
+
+const colors = { 51: "#e6194b", 52: "#3cb44b" };
+
+const map = L.map('map');
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19,
+  attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
+
+const layer = L.geoJSON(data, {
+  style: function(feature) {
+    const z = feature.properties.num_zona;
+    return {
+      color: colors[z] || "#3388ff",
+      weight: 2,
+      fillColor: colors[z] || "#3388ff",
+      fillOpacity: 0.35
+    };
+  },
+  onEachFeature: function(feature, lyr) {
+    const p = feature.properties;
+    lyr.bindPopup(`<b>Zona ${p.num_zona}</b><br>${p.nom_zona}`);
+  }
+}).addTo(map);
+
+map.fitBounds(layer.getBounds(), { padding: [30, 30] });
+
+const legend = L.control({ position: 'bottomright' });
+legend.onAdd = function() {
+  const div = L.DomUtil.create('div', 'legend');
+  div.innerHTML = `
+    <div><span style="background:${colors[51]}"></span>Zona 51 - Venezuela</div>
+    <div><span style="background:${colors[52]}"></span>Zona 52 - Agramonte</div>
+  `;
+  return div;
+};
+legend.addTo(map);
+</script>
+</body>
+</html>
